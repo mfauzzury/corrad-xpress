@@ -30,7 +30,7 @@ async function submit() {
   error.value = "";
   try {
     await auth.signIn(email.value, password.value);
-    router.push("/");
+    router.push("/admin");
   } catch (e) {
     error.value = e instanceof Error ? e.message : "Login failed";
   }

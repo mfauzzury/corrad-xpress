@@ -52,7 +52,7 @@ onMounted(load);
         <h1 class="page-title">Posts</h1>
         <button
           class="flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-800"
-          @click="router.push('/posts/new')"
+          @click="router.push('/admin/posts/new')"
         >
           <Plus class="h-4 w-4" />
           Add Post
@@ -114,7 +114,7 @@ onMounted(load);
                   <div class="flex items-center justify-end gap-1.5">
                     <button
                       class="group relative flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
-                      @click="router.push(`/posts/${item.id}`)"
+                      @click="router.push(`/admin/posts/${item.id}`)"
                     >
                       <Pencil class="h-3.5 w-3.5" />
                       <span class="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">Edit</span>

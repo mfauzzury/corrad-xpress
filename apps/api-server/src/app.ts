@@ -15,6 +15,7 @@ import { mediaRouter } from "./routes/media.js";
 import { pagesRouter } from "./routes/pages.js";
 import { categoriesRouter } from "./routes/categories.js";
 import { postsRouter } from "./routes/posts.js";
+import { publicRouter } from "./routes/public.js";
 import { rolesRouter } from "./routes/roles.js";
 import { settingsRouter } from "./routes/settings.js";
 import { usersRouter } from "./routes/users.js";
@@ -43,6 +44,9 @@ app.use((req, res, next) => {
   if (req.path === "/api/health" || req.path === "/api/auth/login") {
     return next();
   }
+  if (req.path.startsWith("/api/public")) {
+    return next();
+  }
   if (req.path === "/api/settings" && req.method === "GET") {
     return next();
   }
@@ -57,6 +61,7 @@ app.use((req, res, next) => {
 app.use("/api/posts", postsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/pages", pagesRouter);
+app.use("/api/public", publicRouter);
 app.use("/api/media", mediaRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/users", usersRouter);

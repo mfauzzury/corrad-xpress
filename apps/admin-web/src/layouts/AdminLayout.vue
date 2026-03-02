@@ -87,7 +87,7 @@ const headerUserRole = computed(() => truncateHeaderText(userRoleLabel.value));
 
 async function signOut() {
   await auth.signOut();
-  router.push("/login");
+  router.push("/admin/login");
 }
 
 function isActive(path: string): boolean {
@@ -152,7 +152,7 @@ watch(() => route.path, syncOpenMenus, { immediate: true });
         <span v-if="site.siteTitle" class="h-full w-px bg-slate-200" />
 
         <router-link
-          :to="'/settings/users/' + auth.user?.id"
+          :to="'/admin/settings/users/' + auth.user?.id"
           class="group relative flex h-full items-center gap-2 px-3 transition-colors hover:bg-[var(--accent-600)]"
         >
           <div

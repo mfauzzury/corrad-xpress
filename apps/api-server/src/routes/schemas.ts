@@ -32,14 +32,18 @@ export const pageInputSchema = z.object({
 export const settingsInputSchema = z.object({
   siteTitle: z.string().min(1),
   tagline: z.string().default(""),
+  webfrontTitle: z.string().default(""),
+  webfrontTagline: z.string().default(""),
   titleFormat: z.string().min(1),
   metaDescription: z.string().default(""),
   siteIconUrl: z.string().default(""),
+  webfrontLogoUrl: z.string().default(""),
   sidebarLogoUrl: z.string().default(""),
   faviconUrl: z.string().default(""),
   language: z.string().min(1),
   timezone: z.string().min(1),
   footerText: z.string().default(""),
+  frontPageId: z.number().int().nullable().default(null),
 });
 
 export const loginSchema = z.object({
@@ -73,6 +77,16 @@ export const adminMenuPrefsSchema = z.object({
   hidden: z.array(z.string()),
   hiddenGroups: z.array(z.string()).default([]),
 });
+
+export const storefrontMenuItemSchema = z.object({
+  id: z.string().trim().min(1).max(80).optional(),
+  label: z.string().trim().min(1).max(100),
+  href: z.string().trim().min(1).max(500),
+  parentId: z.string().trim().min(1).max(80).nullable().optional(),
+  openInNewTab: z.boolean().default(false),
+});
+
+export const storefrontMenuSchema = z.array(storefrontMenuItemSchema).max(20);
 
 export const mediaMetadataInputSchema = z.object({
   title: z.string().trim().max(255).default(""),

@@ -42,7 +42,7 @@ async function save() {
     await createCategory(payload);
   }
 
-  router.push("/categories");
+  router.push("/admin/categories");
 }
 
 onMounted(load);
@@ -89,7 +89,7 @@ onMounted(load);
         </button>
         <button
           class="flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-600 shadow-sm transition-colors hover:bg-slate-50"
-          @click="router.push('/categories')"
+          @click="router.push('/admin/categories')"
         >
           <X class="h-4 w-4" />
           Cancel

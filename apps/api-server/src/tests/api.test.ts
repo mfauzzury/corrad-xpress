@@ -37,6 +37,7 @@ beforeEach(async () => {
   await prisma.page.deleteMany();
   await prisma.media.deleteMany();
   await prisma.session.deleteMany();
+  await prisma.setting.deleteMany();
 
   const loginResponse = await agent.post("/api/auth/login").send({
     email: process.env.ADMIN_EMAIL ?? "admin@example.com",
@@ -114,13 +115,90 @@ describe("API smoke", () => {
       titleFormat: "%page% | %site%",
       metaDescription: "desc",
       siteIconUrl: "",
+      sidebarLogoUrl: "",
       faviconUrl: "",
       language: "en",
       timezone: "UTC",
+      footerText: "",
+      frontPageId: null,
     });
 
     assert.equal(valid.status, 200);
     assert.equal(valid.body.data.siteTitle, "CMS");
+    assert.equal(valid.body.data.frontPageId, null);
+  });
+
+  it("serves public frontpage with fallback order", async () => {
+    const noPages = await request(app).get("/api/public/pages/frontpage");
+    assert.equal(noPages.status, 404);
+
+    const latest = await agent
+      .post("/api/pages")
+      .set("x-csrf-token", csrfToken)
+      .send({ title: "Latest Page", content: "Body", status: "published" });
+    assert.equal(latest.status, 200);
+
+    const byLatest = await request(app).get("/api/public/pages/frontpage");
+    assert.equal(byLatest.status, 200);
+    assert.equal(byLatest.body.meta.source, "latest");
+    assert.equal(byLatest.body.data.title, "Latest Page");
+
+    const home = await agent
+      .post("/api/pages")
+      .set("x-csrf-token", csrfToken)
+      .send({ title: "Home", slug: "home", content: "Home Body", status: "published" });
+    assert.equal(home.status, 200);
+
+    const byHome = await request(app).get("/api/public/pages/frontpage");
+    assert.equal(byHome.status, 200);
+    assert.equal(byHome.body.meta.source, "home-slug");
+    assert.equal(byHome.body.data.slug, "home");
+
+    const selected = await agent
+      .post("/api/pages")
+      .set("x-csrf-token", csrfToken)
+      .send({ title: "Selected Front", content: "Selected Body", status: "published" });
+    assert.equal(selected.status, 200);
+
+    const settingsUpdate = await agent.put("/api/settings").set("x-csrf-token", csrfToken).send({
+      siteTitle: "CMS",
+      tagline: "Tag",
+      titleFormat: "%page% | %site%",
+      metaDescription: "desc",
+      siteIconUrl: "",
+      sidebarLogoUrl: "",
+      faviconUrl: "",
+      language: "en",
+      timezone: "UTC",
+      footerText: "",
+      frontPageId: selected.body.data.id,
+    });
+    assert.equal(settingsUpdate.status, 200);
+
+    const bySetting = await request(app).get("/api/public/pages/frontpage");
+    assert.equal(bySetting.status, 200);
+    assert.equal(bySetting.body.meta.source, "frontPageId");
+    assert.equal(bySetting.body.data.id, selected.body.data.id);
+  });
+
+  it("returns published public page by slug only", async () => {
+    await agent
+      .post("/api/pages")
+      .set("x-csrf-token", csrfToken)
+      .send({ title: "Draft Public", slug: "draft-public", content: "Body", status: "draft" });
+
+    const published = await agent
+      .post("/api/pages")
+      .set("x-csrf-token", csrfToken)
+      .send({ title: "Public", slug: "public", content: "Body", status: "published" });
+    assert.equal(published.status, 200);
+
+    const ok = await request(app).get("/api/public/pages/public");
+    assert.equal(ok.status, 200);
+    assert.equal(ok.body.data.slug, "public");
+
+    const hidden = await request(app).get("/api/public/pages/draft-public");
+    assert.equal(hidden.status, 404);
   });
 
   it("rejects csrf mismatch", async () => {

@@ -93,14 +93,33 @@ export type MediaMetadataInput = {
 export type SettingsPayload = {
   siteTitle: string;
   tagline: string;
+  webfrontTitle: string;
+  webfrontTagline: string;
   titleFormat: string;
   metaDescription: string;
   siteIconUrl: string;
+  webfrontLogoUrl: string;
   sidebarLogoUrl: string;
   faviconUrl: string;
   language: string;
   timezone: string;
   footerText: string;
+  frontPageId: number | null;
+};
+
+export type PublicSiteSettings = Pick<
+  SettingsPayload,
+  "siteTitle" | "tagline" | "webfrontTitle" | "webfrontTagline" | "metaDescription" | "footerText" | "siteIconUrl" | "webfrontLogoUrl" | "sidebarLogoUrl" | "faviconUrl"
+> & {
+  storefrontMenu: StorefrontMenuItem[];
+};
+
+export type StorefrontMenuItem = {
+  id: string;
+  label: string;
+  href: string;
+  parentId: string | null;
+  openInNewTab: boolean;
 };
 
 export type Role = {

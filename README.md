@@ -1,12 +1,22 @@
-# CMS Release Setup
+# CORRAD+ CMS (Vue + Express)
 
 This repository contains a CMS stack:
 - `apps/api-server`: Express + Prisma + SQLite API
-- `apps/admin-web`: Vue 3 + Vite admin panel
+- `apps/admin-web`: Vue 3 + Vite app with two surfaces:
+  - Storefront: `/`
+  - Admin: `/admin/*`
 
-The root Next.js app is optional reference UI and is not required to run CMS.
+## URLs (Development)
 
-## Clean Setup (Recommended)
+- Storefront + Admin app: `http://localhost:5173`
+- API: `http://localhost:4000`
+
+Examples:
+- Storefront frontpage: `http://localhost:5173/`
+- Storefront page by slug: `http://localhost:5173/about-us`
+- Admin login: `http://localhost:5173/admin/login`
+
+## Quick Start
 
 Run from repo root:
 
@@ -16,23 +26,9 @@ npm run setup:cms
 npm run dev:cms
 ```
 
-What this does:
-- Removes old build/cache/local state (`clean:all`)
-- Installs dependencies
-- Creates missing `.env` files from `.env.example`
-- Generates Prisma client
-- Pushes database schema
-- Seeds default data
-- Starts API + Admin in dev mode
-
-## URLs
-
-- API: `http://localhost:4000`
-- Admin Web: `http://localhost:5173`
-
 ## Default Admin Login
 
-From `apps/api-server/.env`:
+From `apps/api-server/.env` defaults:
 - `ADMIN_EMAIL=admin@example.com`
 - `ADMIN_PASSWORD=admin12345`
 
@@ -42,29 +38,21 @@ From `apps/api-server/.env`:
 npm run clean        # remove generated files, keep local DB/uploads/.env
 npm run clean:all    # full reset including .env, SQLite DB, uploads
 npm run setup:cms    # one-command CMS bootstrap
-npm run dev:cms      # run api + admin
-npm run build:cms    # build api + admin
+npm run dev:cms      # run api + admin-web
+npm run build:cms    # build api + admin-web
 ```
 
-## API Endpoints
+## API Highlights
 
-- `POST /api/auth/login`
-- `POST /api/auth/logout`
-- `GET /api/auth/me`
-- `GET /api/posts`
-- `POST /api/posts`
-- `GET /api/posts/:id`
-- `PUT /api/posts/:id`
-- `DELETE /api/posts/:id`
-- `GET /api/pages`
-- `POST /api/pages`
-- `GET /api/pages/:id`
-- `PUT /api/pages/:id`
-- `DELETE /api/pages/:id`
-- `GET /api/media`
-- `POST /api/media/upload`
-- `DELETE /api/media/:id`
-- `GET /api/settings`
-- `PUT /api/settings`
-- `GET /api/dashboard/summary`
-- `GET /api/health`
+Private CMS/admin APIs:
+- `/api/auth/*`
+- `/api/posts/*`
+- `/api/pages/*`
+- `/api/categories/*`
+- `/api/media/*`
+- `/api/settings/*`
+
+Public storefront APIs:
+- `GET /api/public/site`
+- `GET /api/public/pages/frontpage`
+- `GET /api/public/pages/:slug`

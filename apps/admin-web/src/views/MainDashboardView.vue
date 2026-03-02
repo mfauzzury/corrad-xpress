@@ -26,12 +26,12 @@ onMounted(async () => {
       <div class="rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-white p-6 shadow-sm">
         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Main Dashboard</p>
         <h1 class="mt-2 text-2xl font-semibold text-slate-900">Control Center</h1>
-        <p class="mt-1 text-sm text-slate-500">Start here, then continue to the portal workspace.</p>
+        <p class="mt-1 text-sm text-slate-500">Start here, then continue to the Webfront workspace.</p>
         <button
           class="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
-          @click="router.push('/portal/dashboard')"
+          @click="router.push('/admin/portal/dashboard')"
         >
-          Open Portal Dashboard
+          Open Dashboard
           <ArrowRight class="h-4 w-4" />
         </button>
       </div>
@@ -61,19 +61,19 @@ onMounted(async () => {
       </div>
 
       <div class="grid gap-3 md:grid-cols-3">
-        <button class="rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-slate-50" @click="router.push('/portal/dashboard')">
+        <button class="rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-slate-50" @click="router.push('/admin/portal/dashboard')">
           <div class="flex items-center gap-2 text-sm font-semibold text-slate-800">
-            <ChartNoAxesCombined class="h-4 w-4" /> Portal Dashboard
+            <ChartNoAxesCombined class="h-4 w-4" /> Dashboard
           </div>
           <p class="mt-1 text-xs text-slate-500">View content activity and recent updates.</p>
         </button>
-        <button class="rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-slate-50" @click="router.push('/posts')">
+        <button class="rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-slate-50" @click="router.push('/admin/posts')">
           <div class="flex items-center gap-2 text-sm font-semibold text-slate-800">
             <FileText class="h-4 w-4" /> Manage Content
           </div>
           <p class="mt-1 text-xs text-slate-500">Create and edit posts, pages, and categories.</p>
         </button>
-        <button class="rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-slate-50" @click="router.push('/settings')">
+        <button class="rounded-lg border border-slate-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-slate-50" @click="router.push('/admin/settings')">
           <div class="flex items-center gap-2 text-sm font-semibold text-slate-800">
             <Settings class="h-4 w-4" /> Site Settings
           </div>

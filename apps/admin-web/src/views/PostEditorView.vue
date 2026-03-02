@@ -11,6 +11,7 @@ import {
 } from "lucide-vue-next";
 
 import AdminLayout from "@/layouts/AdminLayout.vue";
+import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import { createPost, getPost, listMedia, listCategories, updatePost, uploadMedia } from "@/api/cms";
 import { API_BASE_URL } from "@/env";
 import type { Category, Media, PublishStatus } from "@/types";
@@ -104,7 +105,7 @@ async function save() {
     await createPost(payload);
   }
 
-  router.push("/posts");
+  router.push("/admin/posts");
 }
 
 onMounted(load);
@@ -141,7 +142,7 @@ onMounted(load);
               </div>
               <div class="space-y-1.5">
                 <label class="text-sm font-medium text-slate-700">Content</label>
-                <textarea v-model="content" rows="16" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm transition-colors focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200" placeholder="Write your post content here..." />
+                <MarkdownEditor v-model="content" :rows="16" placeholder="Write your post using Markdown..." />
               </div>
             </div>
           </article>
@@ -173,7 +174,7 @@ onMounted(load);
                 </button>
                 <button
                   class="flex items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 shadow-sm transition-colors hover:bg-slate-50"
-                  @click="router.push('/posts')"
+                  @click="router.push('/admin/posts')"
                 >
                   <X class="h-4 w-4" />
                 </button>

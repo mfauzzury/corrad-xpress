@@ -14,11 +14,12 @@ import {
 } from "lucide-vue-next";
 
 import AdminLayout from "@/layouts/AdminLayout.vue";
-import { getSettings, updateSettings, uploadMedia, listMedia } from "@/api/cms";
+import { getSettings, updateSettings, uploadMedia, listMedia, listPages } from "@/api/cms";
 import { API_BASE_URL } from "@/env";
 import { useSiteStore } from "@/stores/site";
 import { useRoute } from "vue-router";
 import type { Media, SettingsPayload } from "@/types";
+import type { Page } from "@/types";
 
 const site = useSiteStore();
 const route = useRoute();
@@ -26,14 +27,18 @@ const route = useRoute();
 const form = ref<SettingsPayload>({
   siteTitle: "",
   tagline: "",
+  webfrontTitle: "",
+  webfrontTagline: "",
   titleFormat: "%page% | %site%",
   metaDescription: "",
   siteIconUrl: "",
+  webfrontLogoUrl: "",
   sidebarLogoUrl: "",
   faviconUrl: "",
   language: "en",
   timezone: "UTC",
   footerText: "",
+  frontPageId: null,
 });
 
 const saved = ref(false);
@@ -47,6 +52,7 @@ const mediaPickerOpen = ref(false);
 const mediaPickerTarget = ref<"siteIconUrl" | "faviconUrl" | "sidebarLogoUrl">("siteIconUrl");
 const mediaPickerItems = ref<Media[]>([]);
 const mediaPickerLoading = ref(false);
+const publishedPages = ref<Page[]>([]);
 
 async function openMediaPicker(target: typeof mediaPickerTarget.value) {
   mediaPickerTarget.value = target;
@@ -123,8 +129,12 @@ async function onSidebarLogoUpload(event: Event) {
 
 async function load() {
   try {
-    const response = await getSettings();
-    form.value = response.data;
+    const [settingsResponse, pagesResponse] = await Promise.all([
+      getSettings(),
+      listPages("?status=published&page=1&limit=100&sortBy=updatedAt&sortDir=desc"),
+    ]);
+    form.value = settingsResponse.data;
+    publishedPages.value = pagesResponse.data;
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : "Failed to load settings";
   }
@@ -188,6 +198,25 @@ onMounted(load);
                 <label class="text-sm font-medium text-slate-700">Footer Text</label>
                 <input v-model="form.footerText" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm transition-colors focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200" placeholder="e.g. © 2026 My Company" />
                 <p class="text-xs text-slate-400">Displayed at the bottom of the sidebar.</p>
+              </div>
+              <div class="space-y-1.5 md:col-span-2">
+                <label class="text-sm font-medium text-slate-700">Front Page</label>
+                <select
+                  v-model="form.frontPageId"
+                  class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm shadow-sm transition-colors focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
+                >
+                  <option :value="null">None (use fallback)</option>
+                  <option v-for="page in publishedPages" :key="page.id" :value="page.id">
+                    {{ page.title }} ({{ page.slug }})
+                  </option>
+                </select>
+                <p class="text-xs text-slate-400">Select which published page is shown at Webfront homepage (`/`).</p>
+                <p
+                  v-if="form.frontPageId !== null && !publishedPages.some((page) => page.id === form.frontPageId)"
+                  class="text-xs text-amber-600"
+                >
+                  Selected front page is no longer published or missing. Webfront will use fallback order.
+                </p>
               </div>
             </div>
           </div>

@@ -5,7 +5,6 @@ import { resolve } from "node:path";
 const removeData = process.argv.includes("--all");
 
 const baseTargets = [
-  ".next",
   "node_modules",
   "apps/admin-web/node_modules",
   "apps/admin-web/dist",

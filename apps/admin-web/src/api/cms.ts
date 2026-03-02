@@ -1,5 +1,21 @@
 import { apiRequest } from "./client";
-import type { Category, CategoryInput, Media, MediaMetadataInput, Page, PageInput, Post, PostInput, Role, RoleInput, SettingsPayload, UserDetail, UserInput } from "@/types";
+import type {
+  Category,
+  CategoryInput,
+  Media,
+  MediaMetadataInput,
+  Page,
+  PageInput,
+  Post,
+  PostInput,
+  PublicSiteSettings,
+  Role,
+  RoleInput,
+  SettingsPayload,
+  StorefrontMenuItem,
+  UserDetail,
+  UserInput,
+} from "@/types";
 import type { AdminMenuPrefs } from "@/config/admin-menu";
 
 export async function fetchDashboardSummary() {
@@ -107,6 +123,29 @@ export async function saveAdminMenuPrefs(prefs: AdminMenuPrefs) {
     method: "PUT",
     body: JSON.stringify(prefs),
   });
+}
+
+export async function getStorefrontMenu() {
+  return apiRequest<{ data: StorefrontMenuItem[] }>("/api/settings/storefront-menu");
+}
+
+export async function saveStorefrontMenu(items: StorefrontMenuItem[]) {
+  return apiRequest<{ data: StorefrontMenuItem[] }>("/api/settings/storefront-menu", {
+    method: "PUT",
+    body: JSON.stringify(items),
+  });
+}
+
+export async function getPublicSiteSettings() {
+  return apiRequest<{ data: PublicSiteSettings }>("/api/public/site");
+}
+
+export async function getPublicFrontPage() {
+  return apiRequest<{ data: Page; meta?: { source?: string } }>("/api/public/pages/frontpage");
+}
+
+export async function getPublicPageBySlug(slug: string) {
+  return apiRequest<{ data: Page }>(`/api/public/pages/${encodeURIComponent(slug)}`);
 }
 
 // Users

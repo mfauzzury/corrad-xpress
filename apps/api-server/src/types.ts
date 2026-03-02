@@ -46,14 +46,18 @@ export type MediaMeta = {
 export type SettingsPayload = {
   siteTitle: string;
   tagline: string;
+  webfrontTitle: string;
+  webfrontTagline: string;
   titleFormat: string;
   metaDescription: string;
   siteIconUrl: string;
+  webfrontLogoUrl: string;
   sidebarLogoUrl: string;
   faviconUrl: string;
   language: string;
   timezone: string;
   footerText: string;
+  frontPageId: number | null;
 };
 
 export type AuthedRequest = Request & {
