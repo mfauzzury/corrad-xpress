@@ -11,9 +11,13 @@ import {
 
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import { listUsers, deleteUser } from "@/api/cms";
+import { useConfirmDialog } from "@/composables/useConfirmDialog";
+import { useToast } from "@/composables/useToast";
 import type { UserDetail } from "@/types";
 
 const users = ref<UserDetail[]>([]);
+const confirmDialog = useConfirmDialog();
+const toast = useToast();
 
 async function load() {
   const res = await listUsers();
@@ -21,8 +25,20 @@ async function load() {
 }
 
 async function remove(id: number) {
-  await deleteUser(id);
-  await load();
+  const allowed = await confirmDialog.confirm({
+    title: "Delete user?",
+    message: "This action cannot be undone.",
+    confirmText: "Delete",
+    destructive: true,
+  });
+  if (!allowed) return;
+  try {
+    await deleteUser(id);
+    await load();
+    toast.success("User deleted");
+  } catch (e) {
+    toast.error("Delete failed", e instanceof Error ? e.message : "Unable to delete user.");
+  }
 }
 
 onMounted(load);

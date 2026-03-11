@@ -15,6 +15,8 @@ import {
 
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import { getSettings, updateSettings, uploadMedia, listMedia, listPages } from "@/api/cms";
+import { useConfirmDialog } from "@/composables/useConfirmDialog";
+import { useToast } from "@/composables/useToast";
 import { API_BASE_URL } from "@/env";
 import { useSiteStore } from "@/stores/site";
 import { useRoute } from "vue-router";
@@ -23,6 +25,8 @@ import type { Page } from "@/types";
 
 const site = useSiteStore();
 const route = useRoute();
+const toast = useToast();
+const confirmDialog = useConfirmDialog();
 
 const form = ref<SettingsPayload>({
   siteTitle: "",
@@ -87,8 +91,10 @@ async function onSiteIconUpload(event: Event) {
   try {
     const res = await uploadMedia(file);
     form.value.siteIconUrl = res.data.url;
+    toast.success("Site icon uploaded");
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : "Failed to upload site icon";
+    toast.error("Upload failed", error.value);
   } finally {
     uploadingSiteIcon.value = false;
     (event.target as HTMLInputElement).value = "";
@@ -103,8 +109,10 @@ async function onFaviconUpload(event: Event) {
   try {
     const res = await uploadMedia(file);
     form.value.faviconUrl = res.data.url;
+    toast.success("Favicon uploaded");
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : "Failed to upload favicon";
+    toast.error("Upload failed", error.value);
   } finally {
     uploadingFavicon.value = false;
     (event.target as HTMLInputElement).value = "";
@@ -119,8 +127,10 @@ async function onSidebarLogoUpload(event: Event) {
   try {
     const res = await uploadMedia(file);
     form.value.sidebarLogoUrl = res.data.url;
+    toast.success("Sidebar logo uploaded");
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : "Failed to upload sidebar logo";
+    toast.error("Upload failed", error.value);
   } finally {
     uploadingSidebarLogo.value = false;
     (event.target as HTMLInputElement).value = "";
@@ -148,14 +158,29 @@ async function save() {
     site.applyFrom(form.value);
     site.setDocumentTitle((route.meta.title as string) || "Settings");
     saved.value = true;
+    toast.success("Settings saved");
     setTimeout(() => {
       saved.value = false;
     }, 2000);
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : "Failed to save settings";
+    toast.error("Save failed", error.value);
   } finally {
     saving.value = false;
   }
+}
+
+async function removeAsset(key: "siteIconUrl" | "faviconUrl" | "sidebarLogoUrl", label: string) {
+  if (!form.value[key]) return;
+  const allowed = await confirmDialog.confirm({
+    title: `Remove ${label}?`,
+    message: "This will clear the current image reference.",
+    confirmText: "Remove",
+    destructive: true,
+  });
+  if (!allowed) return;
+  form.value[key] = "";
+  toast.info(`${label} removed`);
 }
 
 onMounted(load);
@@ -271,7 +296,7 @@ onMounted(load);
                         Library
                       </button>
                     </div>
-                    <button v-if="form.siteIconUrl" class="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-rose-500" @click="form.siteIconUrl = ''">
+                    <button v-if="form.siteIconUrl" class="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-rose-500" @click="removeAsset('siteIconUrl', 'Site icon')">
                       <Trash2 class="h-3 w-3" />
                       Remove
                     </button>
@@ -300,7 +325,7 @@ onMounted(load);
                         Library
                       </button>
                     </div>
-                    <button v-if="form.faviconUrl" class="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-rose-500" @click="form.faviconUrl = ''">
+                    <button v-if="form.faviconUrl" class="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-rose-500" @click="removeAsset('faviconUrl', 'Favicon')">
                       <Trash2 class="h-3 w-3" />
                       Remove
                     </button>
@@ -329,7 +354,7 @@ onMounted(load);
                         Library
                       </button>
                     </div>
-                    <button v-if="form.sidebarLogoUrl" class="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-rose-500" @click="form.sidebarLogoUrl = ''">
+                    <button v-if="form.sidebarLogoUrl" class="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-rose-500" @click="removeAsset('sidebarLogoUrl', 'Sidebar logo')">
                       <Trash2 class="h-3 w-3" />
                       Remove
                     </button>

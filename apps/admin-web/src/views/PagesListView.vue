@@ -11,9 +11,13 @@ import {
 
 import AdminLayout from "@/layouts/AdminLayout.vue";
 import { deletePage, listPages } from "@/api/cms";
+import { useConfirmDialog } from "@/composables/useConfirmDialog";
+import { useToast } from "@/composables/useToast";
 import type { Page } from "@/types";
 
 const router = useRouter();
+const toast = useToast();
+const confirmDialog = useConfirmDialog();
 const rows = ref<Page[]>([]);
 
 async function load() {
@@ -22,8 +26,20 @@ async function load() {
 }
 
 async function remove(id: number) {
-  await deletePage(id);
-  await load();
+  const allowed = await confirmDialog.confirm({
+    title: "Delete page?",
+    message: "This action cannot be undone.",
+    confirmText: "Delete",
+    destructive: true,
+  });
+  if (!allowed) return;
+  try {
+    await deletePage(id);
+    await load();
+    toast.success("Page deleted");
+  } catch (e) {
+    toast.error("Delete failed", e instanceof Error ? e.message : "Unable to delete page.");
+  }
 }
 
 function openPublicPage(slug: string) {

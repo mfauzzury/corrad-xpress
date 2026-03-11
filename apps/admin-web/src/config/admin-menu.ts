@@ -11,17 +11,15 @@ import {
   Settings,
 } from "lucide-vue-next";
 
-export type MenuChild = {
-  label: string;
-  to: string;
-};
-
-export type MenuItemDef = {
+export type MenuNode = {
   id: string;
   label: string;
   to: string;
+  children?: MenuNode[];
+};
+
+export type MenuItemDef = MenuNode & {
   icon: Component;
-  children?: MenuChild[];
 };
 
 export type MenuGroupDef = {
@@ -33,7 +31,11 @@ export type MenuGroupDef = {
 export type AdminMenuPrefs = {
   groupOrder: string[];
   itemOrder: Record<string, string[]>;
+  childOrder: Record<string, string[]>;
+  grandchildOrder: Record<string, string[]>;
   hidden: string[];
+  hiddenChildren: string[];
+  hiddenGrandchildren: string[];
   hiddenGroups: string[];
 };
 
@@ -56,9 +58,9 @@ export const DEFAULT_MENU: MenuGroupDef[] = [
         to: "/admin/posts",
         icon: FileText,
         children: [
-          { label: "All Posts", to: "/admin/posts" },
-          { label: "Add New", to: "/admin/posts/new" },
-          { label: "Categories", to: "/admin/categories" },
+          { id: "posts-all", label: "All Posts", to: "/admin/posts" },
+          { id: "posts-new", label: "Add New", to: "/admin/posts/new" },
+          { id: "posts-categories", label: "Categories", to: "/admin/categories" },
         ],
       },
       {
@@ -67,8 +69,8 @@ export const DEFAULT_MENU: MenuGroupDef[] = [
         to: "/admin/pages",
         icon: FileText,
         children: [
-          { label: "All Pages", to: "/admin/pages" },
-          { label: "Add New", to: "/admin/pages/new" },
+          { id: "pages-all", label: "All Pages", to: "/admin/pages" },
+          { id: "pages-new", label: "Add New", to: "/admin/pages/new" },
         ],
       },
       {
@@ -76,7 +78,7 @@ export const DEFAULT_MENU: MenuGroupDef[] = [
         label: "Media",
         to: "/admin/media",
         icon: Image,
-        children: [{ label: "Library", to: "/admin/media" }],
+        children: [{ id: "media-library", label: "Library", to: "/admin/media" }],
       },
       { id: "storefront-menu", label: "Menus", to: "/admin/webfront-menu", icon: Link2 },
       { id: "webfront-settings", label: "Settings", to: "/admin/webfront-settings", icon: Settings },
@@ -93,10 +95,18 @@ export const DEFAULT_MENU: MenuGroupDef[] = [
         to: "/admin/settings",
         icon: Settings,
         children: [
-          { label: "General", to: "/admin/settings" },
-          { label: "Users", to: "/admin/settings/users" },
-          { label: "Roles", to: "/admin/settings/roles" },
-          { label: "System", to: "/admin/settings/system" },
+          { id: "settings-general", label: "General", to: "/admin/settings" },
+          {
+            id: "settings-users",
+            label: "Users",
+            to: "/admin/settings/users",
+            children: [
+              { id: "settings-users-all", label: "All Users", to: "/admin/settings/users" },
+              { id: "settings-users-new", label: "Add User", to: "/admin/settings/users/new" },
+            ],
+          },
+          { id: "settings-roles", label: "Roles", to: "/admin/settings/roles" },
+          { id: "settings-system", label: "System", to: "/admin/settings/system" },
         ],
       },
     ],
@@ -113,9 +123,9 @@ export const DEFAULT_MENU: MenuGroupDef[] = [
         to: "/admin/kitchen-sink",
         icon: LayoutGrid,
         children: [
-          { label: "Components", to: "/admin/kitchen-sink" },
-          { label: "Forms", to: "/admin/kitchen-sink/forms" },
-          { label: "Charts", to: "/admin/kitchen-sink/charts" },
+          { id: "kitchen-components", label: "Components", to: "/admin/kitchen-sink" },
+          { id: "kitchen-forms", label: "Forms", to: "/admin/kitchen-sink/forms" },
+          { id: "kitchen-charts", label: "Charts", to: "/admin/kitchen-sink/charts" },
         ],
       },
     ],
